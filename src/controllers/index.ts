@@ -13,16 +13,12 @@ import { RouteHandlerMethod } from 'fastify'
 import sharp, { FitEnum, FormatEnum } from 'sharp'
 import { flatten, unflatten } from 'flat'
 import ms from 'ms'
-import DeviceDetector from 'device-detector-js'
-import Avif from 'caniuse-db/features-json/avif.json'
-import WebP from 'caniuse-db/features-json/webp.json'
 
 import { storage } from '../storage'
 import { transform } from '../transform'
 import { sha3, sortObjectByKeys, validateSyncOrFail } from '../utils/utils'
 import { Config, URLClean } from '../config'
-
-const detector = new DeviceDetector()
+import { supportsAvif, supportsWebP } from '../utils/caniuse'
 
 export class ComplexParameter<N = string, T extends object = {}> {
   @IsString()
@@ -170,11 +166,9 @@ export class TransformQueryBase {
   }
 
   autoFormat(ua: string) {
-    const parsed = detector.parse(ua)
-    //https://caniuse.com/avif
-    console.log(parsed)
-    console.log(WebP)
-    // https://caniuse.com/webp
+    if (supportsAvif(ua)) this.format!.name = 'avif'
+    else if (supportsWebP(ua)) this.format!.name = 'webp'
+    else this.format!.name = 'jpeg'
   }
 }
 

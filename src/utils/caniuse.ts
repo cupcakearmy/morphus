@@ -4,16 +4,17 @@ import WebP from 'caniuse-db/features-json/webp.json'
 
 const detector = new DeviceDetector()
 
-function findLowestCompatibleVersion(stat: Record<string, string>): string {
+function findLowestSupportedVersion(stat: Record<string, string>): number | null {
   const entries = Object.entries(stat).sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
   for (const [version, support] of entries) {
     if (support.startsWith('y') || support.startsWith('a')) {
-      return version
+      return parseInt(version)
     }
   }
+  return null
 }
 
-const mapping = {
+const BrowserMappings = {
   'Internet Explorer': 'ie',
   'Microsoft Edge': 'edge',
   Firefox: 'firefox',
@@ -31,20 +32,40 @@ const mapping = {
 }
 
 function matchBrowserToStat(browser: DeviceDetector.DeviceDetectorResult): string {
-  if (!browser.os || !browser.client) throw new Error('Invalid browser')
-  if (browser.os.name === 'iOS') {
+  if (browser.os!.name === 'iOS') {
     return 'ios_saf'
   }
-  if (browser.os.name in mapping) {
-    return mapping[browser.os.name as keyof typeof mapping]
+  if (browser.client!.name in BrowserMappings) {
+    return BrowserMappings[browser.client!.name as keyof typeof BrowserMappings]
   }
   throw new Error('Could not determine mapping for browser')
 }
 
 function match(feature: typeof Avif | typeof WebP, ua: string): boolean {
   const browser = detector.parse(ua)
+  if (!browser.client || !browser.os) {
+    throw new Error('Could not parse browser')
+  }
   const stats = feature.stats[matchBrowserToStat(browser) as keyof typeof feature.stats]
-  console.debug(stats)
-  console.debug(findLowestCompatibleVersion(stats))
-  return false
+  const lowestSupported = findLowestSupportedVersion(stats)
+  if (lowestSupported === null) {
+    return false
+  }
+  return lowestSupported <= parseInt(browser.client.version)
+}
+
+export function supportsAvif(ua: string): boolean {
+  try {
+    return match(Avif, ua)
+  } catch {
+    return false
+  }
+}
+
+export function supportsWebP(ua: string): boolean {
+  try {
+    return match(WebP, ua)
+  } catch {
+    return false
+  }
 }
