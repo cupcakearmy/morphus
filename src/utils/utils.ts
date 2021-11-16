@@ -1,6 +1,7 @@
 import { createHash } from 'crypto'
 import { validateSync, ValidatorOptions, ValidationError as VE } from 'class-validator'
 import { PassThrough, Readable } from 'stream'
+import { NullableStringOrRegexpArray } from '../config'
 
 export class ValidationError extends Error {
   override message: string
@@ -36,4 +37,13 @@ export function splitter(from: NodeJS.ReadableStream, ...streams: NodeJS.Writabl
     splitter.pipe(stream)
   }
   from.pipe(splitter)
+}
+
+export function testForPrefixOrRegexp(str: string, values: (string | RegExp)[]): boolean {
+  for (const value of values) {
+    if (typeof value === 'string') {
+      if (str.startsWith(value)) return true
+    } else if (value.test(str)) return true
+  }
+  return false
 }
