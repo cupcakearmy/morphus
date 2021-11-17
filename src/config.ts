@@ -1,5 +1,8 @@
+import type { FastifyInstance } from 'fastify'
 import convict from 'convict'
 import yaml from 'js-yaml'
+
+convict.addFormat(require('convict-format-with-validator').ipaddress)
 
 export enum StorageType {
   Local = 'local',
@@ -36,6 +39,20 @@ function formatNullableStringOrRegexpArray(values: any) {
 
 convict.addParser({ extension: ['yml', 'yaml'], parse: (s) => yaml.load(s, { schema: Schema }) })
 const config = convict({
+  // Server
+  port: {
+    doc: 'The port to bind.',
+    format: 'port',
+    default: 80,
+    env: 'PORT',
+  },
+  address: {
+    doc: 'The address to bind.',
+    format: 'ipaddress',
+    default: '127.0.0.1',
+    env: 'ADDRESS',
+  },
+
   // Security
   allowedDomains: {
     doc: 'The domains that are allowed to be used as image sources',
@@ -89,16 +106,18 @@ for (const file of ['morphus.yaml', 'morphus.yaml', 'morphus.json']) {
   } catch {}
 }
 
-try {
-  config.validate({ allowed: 'strict' })
-} catch (e) {
-  if (e instanceof Error) {
-    console.error(e.message)
-  } else {
-    console.error(e)
+export function init(App: FastifyInstance) {
+  try {
+    config.validate({ allowed: 'strict' })
+    App.log.info(config.toString())
+  } catch (e) {
+    if (e instanceof Error) {
+      App.log.error(e.message)
+    } else {
+      App.log.error(e)
+    }
+    process.exit(1)
   }
-  process.exit(1)
 }
-export const Config = config.get()
 
-console.debug(Config)
+export const Config = config.get()

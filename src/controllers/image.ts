@@ -177,9 +177,9 @@ export const image: RouteHandlerMethod = async (request, reply) => {
     }
 
     if (Config.allowedHosts) {
-      const host = request.headers.host
-      console.debug('Testing host', host, Config.allowedHosts)
-      if (!host || !testForPrefixOrRegexp(host, Config.allowedHosts)) return ForbiddenError(reply, 'host not allowed')
+      const origin = request.headers.origin
+      if (!origin || !testForPrefixOrRegexp(origin, Config.allowedHosts))
+        return ForbiddenError(reply, 'origin not allowed')
     }
 
     // @ts-ignore

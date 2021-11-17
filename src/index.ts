@@ -1,35 +1,34 @@
-// Require the framework and instantiate it
 import fastify from 'fastify'
-import compress from 'fastify-compress'
-import cors from 'fastify-cors'
-import underPressure from 'under-pressure'
 
-import './config'
-import { version } from './controllers'
-import { image } from './controllers/image'
-import { init } from './storage'
+import { Config, init as initConfig } from './config'
+import { init as initRoutes } from './controllers'
+import { init as initStorage } from './storage'
+import { init as initMiddleware } from './fastify/middleware'
+import { init as initHooks } from './fastify/hooks'
 
-init()
+export const App = fastify({ logger: { prettyPrint: true } })
 
-const app = fastify({ logger: true })
-app.register(underPressure)
-app.register(require('fastify-caching'))
-app.register(compress, { global: true })
-app.register(cors, { origin: true })
+// Internal
+initConfig(App)
+initStorage()
 
-app.addHook('preHandler', (request, reply, done) => {
-  reply.header('Server', 'morphus')
-  done()
+// Fastify
+initMiddleware(App)
+initHooks(App)
+initRoutes(App)
+
+process.on('SIGINT', async function () {
+  App.log.info('Stopping server')
+  // Close with 2s timeout
+  await Promise.race([App.close(), new Promise((resolve) => setTimeout(resolve, 2000))])
+  process.exit()
 })
-
-app.get('/api/image', image)
-app.get('/version', version)
 
 async function start() {
   try {
-    await app.listen(3000)
+    await App.listen(Config.port, Config.address)
   } catch (err) {
-    app.log.error(err)
+    App.log.error(err)
     process.exit(1)
   }
 }
