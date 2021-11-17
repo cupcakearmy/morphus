@@ -20,7 +20,7 @@ export async function init() {
   if (!storage) {
     switch (Config.storage) {
       case StorageType.Local:
-        storage = new Local(Config.assets)
+        storage = new Local(Config.localAssets)
         break
       default:
         throw new Error(`Unknown storage type: ${Config.storage}`)

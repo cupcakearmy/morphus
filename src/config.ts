@@ -91,15 +91,15 @@ const config = convict({
   },
 
   // Local storage
-  assets: {
+  localAssets: {
     doc: 'The path to the assets folder',
     format: String,
     default: './assets',
-    env: 'ASSETS',
+    env: 'LOCAL_ASSETS',
   },
 })
 
-for (const file of ['morphus.yaml', 'morphus.yaml', 'morphus.json']) {
+for (const file of ['morphus.yaml', 'morphus.yaml']) {
   try {
     config.loadFile(file)
     break

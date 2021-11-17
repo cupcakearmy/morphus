@@ -17,7 +17,7 @@ RUN npm exec pnpm i --frozen-lockfile --prod
 
 COPY --from=builder /app/dist ./dist
 
-ENV ASSETS=/data
+ENV LOCAL_ASSETS=/data
 ENV ADDRESS=0.0.0.0
 
 EXPOSE 80

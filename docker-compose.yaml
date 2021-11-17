@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  app:
+    image: cupcakearmy/morphus
+    ports:
+      - "80:80"
+    volumes:
+      - ./morphus.yaml:/app/morphus.yaml:ro
+      - ./data:/data
+    
