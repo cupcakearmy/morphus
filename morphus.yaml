@@ -1,5 +1,0 @@
-allowedDomains:
-  - !regexp ^https?:\/\/images.unsplash.com
-allowedHosts:
-  - foo.local:5000
-cleanUrls: query
