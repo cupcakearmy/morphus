@@ -4,6 +4,7 @@
   "description": "",
   "author": "Niccolo Borgioli",
   "license": "MIT",
+  "main": "dist/src",
   "scripts": {
     "build": "tsc",
     "dev": "tsnd src"

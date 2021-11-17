@@ -17,7 +17,7 @@ import ms from 'ms'
 import { storage } from '../storage'
 import { transform } from '../transform'
 import { sha3, sortObjectByKeys, testForPrefixOrRegexp, validateSyncOrFail } from '../utils/utils'
-import { Config, NullableStringOrRegexpArray, URLClean } from '../config'
+import { Config, URLClean } from '../config'
 import { supportsAvif, supportsWebP } from '../utils/caniuse'
 import { ForbiddenError } from '../utils/errors'
 

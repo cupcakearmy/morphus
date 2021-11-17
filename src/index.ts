@@ -8,15 +8,6 @@ import { init as initHooks } from './fastify/hooks'
 
 export const App = fastify({ logger: { prettyPrint: true } })
 
-// Internal
-initConfig(App)
-initStorage()
-
-// Fastify
-initMiddleware(App)
-initHooks(App)
-initRoutes(App)
-
 process.on('SIGINT', async function () {
   App.log.info('Stopping server')
   // Close with 2s timeout
@@ -24,12 +15,22 @@ process.on('SIGINT', async function () {
   process.exit()
 })
 
-async function start() {
+async function main() {
   try {
+    // Internal
+    initConfig(App)
+    initStorage()
+
+    // Fastify
+    initMiddleware(App)
+    initHooks(App)
+    initRoutes(App)
+
+    // Start
     await App.listen(Config.port, Config.address)
   } catch (err) {
     App.log.error(err)
     process.exit(1)
   }
 }
-start()
+main()

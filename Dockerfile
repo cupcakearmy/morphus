@@ -19,5 +19,7 @@ COPY --from=builder /app/dist ./dist
 
 ENV ASSETS=/data
 ENV ADDRESS=0.0.0.0
+
 EXPOSE 80
-CMD [ "node", "dist/src" ]
+
+CMD [ "node", "." ]

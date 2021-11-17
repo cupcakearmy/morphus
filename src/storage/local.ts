@@ -1,11 +1,16 @@
 import { resolve, join } from 'path'
 import fs from 'fs'
+import { promisify } from 'util'
 
 import { Storage } from './'
 
 export class Local implements Storage {
   constructor(private readonly root: string) {
     this.root = resolve(root)
+  }
+
+  async init() {
+    await promisify(fs.mkdir)(this.root, { recursive: true })
   }
 
   read(path: string): Promise<Buffer> {
