@@ -187,9 +187,12 @@ export const image: RouteHandlerMethod = async (request, reply) => {
     // @ts-ignore
     reply.expires(new Date(Date.now() + ms(Config.maxAge)))
 
-    let stream: NodeJS.ReadableStream = (await storage.exists(q.hash))
-      ? await storage.readStream(q.hash)
-      : await transform(q)
+    let stream: NodeJS.ReadableStream
+    try {
+      stream = await storage.readStream(q.hash)
+    } catch (err) {
+      stream = await transform(q)
+    }
 
     reply.code(200).headers({
       'Content-Type': `image/${q.format?.name}`,

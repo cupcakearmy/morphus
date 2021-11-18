@@ -1,7 +1,6 @@
 import { createHash } from 'crypto'
 import { validateSync, ValidatorOptions, ValidationError as VE } from 'class-validator'
 import { PassThrough, Readable } from 'stream'
-import { NullableStringOrRegexpArray } from '../config'
 
 export class ValidationError extends Error {
   override message: string
@@ -46,4 +45,22 @@ export function testForPrefixOrRegexp(str: string, values: (string | RegExp)[]):
     } else if (value.test(str)) return true
   }
   return false
+}
+
+export class StreamUtils {
+  static fromBuffer(buffer: Buffer) {
+    const stream = new Readable()
+    stream.push(buffer)
+    stream.push(null)
+    return stream
+  }
+
+  static toBuffer(stream: NodeJS.ReadableStream) {
+    return new Promise<Buffer>((resolve, reject) => {
+      const chunks: Buffer[] = []
+      stream.on('data', (chunk) => chunks.push(chunk))
+      stream.on('error', reject)
+      stream.on('end', () => resolve(Buffer.concat(chunks)))
+    })
+  }
 }

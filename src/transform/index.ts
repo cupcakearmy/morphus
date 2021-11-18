@@ -6,8 +6,8 @@ import { ComplexParameter, TransformQueryBase } from '../controllers/image'
 import { storage } from '../storage'
 import { sha3, splitter } from '../utils/utils'
 
-async function downloadImage(url: string): Promise<NodeJS.ReadableStream> {
-  const disk = await storage.writeStream(sha3(url))
+async function downloadAndSaveImage(url: string, path: string): Promise<NodeJS.ReadableStream> {
+  const disk = await storage.writeStream(path)
   return new Promise((resolve) => {
     get(url, (res) => {
       const out = new PassThrough()
@@ -19,10 +19,11 @@ async function downloadImage(url: string): Promise<NodeJS.ReadableStream> {
 
 export async function getImage(url: string): Promise<NodeJS.ReadableStream> {
   const id = sha3(url)
-  if (!(await storage.exists(id))) {
-    return await downloadImage(url)
+  try {
+    return await storage.readStream(id)
+  } catch {
+    return await downloadAndSaveImage(url, id)
   }
-  return await storage.readStream(id)
 }
 
 function applyOperation(pipeline: sharp.Sharp, { name, options }: ComplexParameter<string, any>): sharp.Sharp {

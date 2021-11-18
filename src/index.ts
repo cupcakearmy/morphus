@@ -6,7 +6,7 @@ import { init as initStorage } from './storage'
 import { init as initMiddleware } from './fastify/middleware'
 import { init as initHooks } from './fastify/hooks'
 
-export const App = fastify({ logger: { prettyPrint: true } })
+export const App = fastify({ logger: { prettyPrint: true, level: Config.logLevel } })
 
 process.on('SIGINT', async function () {
   App.log.info('Stopping server')
@@ -19,7 +19,7 @@ async function main() {
   try {
     // Internal
     initConfig(App)
-    initStorage()
+    await initStorage(App)
 
     // Fastify
     initMiddleware(App)

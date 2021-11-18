@@ -8,7 +8,7 @@ The heavy lifting is done by [`libvips`](https://github.com/libvips/libvips) and
 - Config driven
 - Domain protection
 - Host verification
-- Multiple storage adapters (Local, S3, GCS)
+- Multiple storage adapters (Local, Minio, S3)
 - Caniuse based automatic formatting
 - ETag caching
 

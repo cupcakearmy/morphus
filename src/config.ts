@@ -6,9 +6,11 @@ convict.addFormat(require('convict-format-with-validator').ipaddress)
 
 export enum StorageType {
   Local = 'local',
-  // S3 = 's3',
+  Minio = 'minio',
+  S3 = 's3',
   // GCS = 'gcs',
   // Azure = 'azure',
+  // B2 = 'b2',
 }
 
 export enum URLClean {
@@ -51,6 +53,14 @@ const config = convict({
     format: 'ipaddress',
     default: '127.0.0.1',
     env: 'ADDRESS',
+  },
+
+  // Logging
+  logLevel: {
+    doc: 'The level of logging to use.',
+    format: ['trace', 'debug', 'info', 'warn', 'error', 'fatal'],
+    default: 'info',
+    env: 'LOG_LEVEL',
   },
 
   // Security
@@ -96,6 +106,72 @@ const config = convict({
     format: String,
     default: './assets',
     env: 'LOCAL_ASSETS',
+  },
+
+  // Minio storage
+  minio: {
+    accessKey: {
+      doc: 'The access key for Minio',
+      format: String,
+      default: '',
+      env: 'MINIO_ACCESS_KEY',
+      sensitive: true,
+    },
+    secretKey: {
+      doc: 'The secret key for Minio',
+      format: String,
+      default: '',
+      env: 'MINIO_SECRET_KEY',
+      sensitive: true,
+    },
+    endpoint: {
+      doc: 'The endpoint for Minio',
+      format: String,
+      default: '',
+      env: 'MINIO_ENDPOINT',
+    },
+    bucket: {
+      doc: 'The bucket to use for Minio',
+      format: String,
+      default: '',
+      env: 'MINIO_BUCKET',
+    },
+    region: {
+      doc: 'The region for Minio',
+      format: String,
+      default: '',
+      env: 'MINIO_REGION',
+    },
+  },
+
+  // S3 storage
+  s3: {
+    bucket: {
+      doc: 'The S3 bucket to use',
+      format: String,
+      default: '',
+      env: 'S3_BUCKET',
+    },
+    region: {
+      doc: 'The S3 region to use',
+      format: String,
+      default: '',
+      env: 'S3_REGION',
+    },
+    accessKey: {
+      doc: 'The S3 access key id to use',
+      format: String,
+      default: '',
+      env: 'S3_ACCESS_KEY_ID',
+      sensitive: true,
+    },
+    secretKey: {
+      doc: 'The S3 secret access key to use',
+      format: String,
+      default: '',
+      env: 'S3_SECRET_ACCESS_KEY',
+      sensitive: true,
+    },
   },
 })
 
