@@ -1,5 +1,5 @@
+import { validateSync, ValidationError as VE, ValidatorOptions } from 'class-validator'
 import { createHash } from 'crypto'
-import { validateSync, ValidatorOptions, ValidationError as VE } from 'class-validator'
 import { PassThrough, Readable } from 'stream'
 
 export class ValidationError extends Error {

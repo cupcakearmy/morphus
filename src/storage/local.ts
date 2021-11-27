@@ -1,5 +1,5 @@
-import { resolve, join } from 'path'
 import fs from 'fs'
+import { join, resolve } from 'path'
 import { promisify } from 'util'
 
 import { Storage } from './'
@@ -11,30 +11,6 @@ export class Local implements Storage {
 
   async init() {
     await promisify(fs.mkdir)(this.root, { recursive: true })
-  }
-
-  read(path: string): Promise<Buffer> {
-    const file = join(this.root, path)
-    return new Promise((resolve, reject) => {
-      fs.readFile(file, (err, data) => {
-        if (err) {
-          return reject(err)
-        }
-        resolve(data)
-      })
-    })
-  }
-
-  write(path: string, data: Buffer): Promise<void> {
-    const file = join(this.root, path)
-    return new Promise((resolve, reject) => {
-      fs.writeFile(file, data, (err) => {
-        if (err) {
-          return reject(err)
-        }
-        resolve()
-      })
-    })
   }
 
   exists(path: string): Promise<boolean> {

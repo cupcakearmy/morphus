@@ -1,5 +1,5 @@
-import type { FastifyInstance } from 'fastify'
 import convict from 'convict'
+import type { FastifyInstance } from 'fastify'
 import yaml from 'js-yaml'
 
 convict.addFormat(require('convict-format-with-validator').ipaddress)
@@ -8,7 +8,7 @@ export enum StorageType {
   Local = 'local',
   Minio = 'minio',
   S3 = 's3',
-  // GCS = 'gcs',
+  GCS = 'gcs',
   // Azure = 'azure',
   // B2 = 'b2',
 }
@@ -173,9 +173,25 @@ const config = convict({
       sensitive: true,
     },
   },
+
+  // GCS storage
+  gcs: {
+    bucket: {
+      doc: 'The GCS bucket to use',
+      format: String,
+      default: '',
+      env: 'GCS_BUCKET',
+    },
+    keyFilename: {
+      doc: 'The GCS key file to use',
+      format: String,
+      default: '',
+      env: 'GCS_KEY_FILENAME',
+    },
+  },
 })
 
-for (const file of ['morphus.yaml', 'morphus.yaml']) {
+for (const file of ['morphus.yaml', 'morphus.yml']) {
   try {
     config.loadFile(file)
     break

@@ -1,13 +1,12 @@
 import { FastifyInstance } from 'fastify'
+
 import { Config, StorageType } from '../config'
+import { GCS } from './gcs'
 import { Local } from './local'
 import { Minio } from './minio'
 
 export abstract class Storage {
   abstract init(): Promise<void>
-
-  abstract read(path: string): Promise<Buffer>
-  abstract write(path: string, data: Buffer): Promise<void>
 
   abstract readStream(path: string): Promise<NodeJS.ReadableStream>
   abstract writeStream(path: string): Promise<NodeJS.WritableStream>
@@ -26,12 +25,6 @@ export async function init(App: FastifyInstance) {
         storage = new Local(Config.localAssets)
         break
       case StorageType.S3:
-        // storage = new S3({
-        //   accessKeyId: Config.s3.accessKey,
-        //   secretAccessKey: Config.s3.secretKey,
-        //   bucket: Config.s3.bucket,
-        //   region: Config.s3.region,
-        // })
         storage = new Minio({
           accessKey: Config.s3.accessKey,
           secretKey: Config.s3.secretKey,
@@ -49,6 +42,12 @@ export async function init(App: FastifyInstance) {
           bucket: Config.minio.bucket,
         })
         break
+      case StorageType.GCS:
+        storage = new GCS({
+          bucket: Config.gcs.bucket,
+          keyFilename: Config.gcs.keyFilename,
+        })
+        break
       default:
         throw new Error(`Unknown storage type: ${Config.storage}`)
     }
@@ -56,6 +55,7 @@ export async function init(App: FastifyInstance) {
       await storage.init()
       App.log.debug(`Storage initialized: ${Config.storage}`)
     } catch (e) {
+      App.log.error((e as Error).message)
       App.log.error(`Storage initialization failed: ${Config.storage}`)
       process.exit(1)
     }

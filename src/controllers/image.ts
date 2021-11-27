@@ -1,25 +1,26 @@
 import {
   IsDefined,
+  IsIn,
   IsInt,
+  IsObject,
   IsOptional,
   IsPositive,
   IsString,
   IsUrl,
-  IsIn,
-  IsObject,
   ValidateNested,
 } from 'class-validator'
 import { RouteHandlerMethod } from 'fastify'
-import sharp, { FitEnum, FormatEnum } from 'sharp'
 import { flatten, unflatten } from 'flat'
 import ms from 'ms'
+import sharp, { FitEnum, FormatEnum } from 'sharp'
 
+import { App } from '..'
+import { Config, URLClean } from '../config'
 import { storage } from '../storage'
 import { transform } from '../transform'
-import { sha3, sortObjectByKeys, testForPrefixOrRegexp, validateSyncOrFail } from '../utils/utils'
-import { Config, URLClean } from '../config'
 import { supportsAvif, supportsWebP } from '../utils/caniuse'
 import { ForbiddenError } from '../utils/errors'
+import { sha3, sortObjectByKeys, testForPrefixOrRegexp, validateSyncOrFail } from '../utils/utils'
 
 export enum ImageOperations {
   resize,
@@ -190,7 +191,8 @@ export const image: RouteHandlerMethod = async (request, reply) => {
     let stream: NodeJS.ReadableStream
     try {
       stream = await storage.readStream(q.hash)
-    } catch (err) {
+    } catch {
+      App.log.debug(`Transforming`)
       stream = await transform(q)
     }
 
@@ -199,7 +201,6 @@ export const image: RouteHandlerMethod = async (request, reply) => {
     })
 
     return stream
-    // .send(stream)
   } catch (err) {
     reply.code(400).send(err)
     return

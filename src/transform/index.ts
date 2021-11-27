@@ -1,8 +1,8 @@
 import { get } from 'https'
 import sharp from 'sharp'
 import { PassThrough } from 'stream'
-import { ComplexParameter, TransformQueryBase } from '../controllers/image'
 
+import { ComplexParameter, TransformQueryBase } from '../controllers/image'
 import { storage } from '../storage'
 import { sha3, splitter } from '../utils/utils'
 

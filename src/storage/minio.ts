@@ -2,7 +2,6 @@ import { Client } from 'minio'
 import { PassThrough } from 'stream'
 
 import { Storage } from '.'
-import { StreamUtils } from '../utils/utils'
 
 export type MinioConfig = {
   accessKey: string
@@ -28,15 +27,6 @@ export class Minio implements Storage {
 
   async init(): Promise<void> {
     await this.client.bucketExists(this.options.bucket)
-  }
-
-  async read(path: string): Promise<Buffer> {
-    const stream = await this.client.getObject(this.options.bucket, path)
-    return StreamUtils.toBuffer(stream)
-  }
-  async write(path: string, data: Buffer): Promise<void> {
-    const stream = await StreamUtils.fromBuffer(data)
-    await this.client.putObject(this.options.bucket, path, stream)
   }
 
   async readStream(path: string): Promise<NodeJS.ReadableStream> {

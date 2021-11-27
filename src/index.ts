@@ -2,9 +2,9 @@ import fastify from 'fastify'
 
 import { Config, init as initConfig } from './config'
 import { init as initRoutes } from './controllers'
-import { init as initStorage } from './storage'
-import { init as initMiddleware } from './fastify/middleware'
 import { init as initHooks } from './fastify/hooks'
+import { init as initMiddleware } from './fastify/middleware'
+import { init as initStorage } from './storage'
 
 export const App = fastify({ logger: { prettyPrint: true, level: Config.logLevel } })
 

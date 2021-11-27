@@ -1,6 +1,6 @@
-import DeviceDetector from 'device-detector-js'
 import Avif from 'caniuse-db/features-json/avif.json'
 import WebP from 'caniuse-db/features-json/webp.json'
+import DeviceDetector from 'device-detector-js'
 
 const detector = new DeviceDetector()
 
