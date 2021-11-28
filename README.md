@@ -76,16 +76,49 @@ Config files are searched in the current working directory under `morphus.yaml`.
 
 Configuration can be done either thorough config files or env variables. The usage of a config file is recommended. Below is a table of available configuration options, for more details see below.
 
-| Config           | Environment      | Default    | Description                                                                            |
-| ---------------- | ---------------- | ---------- | -------------------------------------------------------------------------------------- |
-| `port`           | `PORT`           | 80         | The port to bind                                                                       |
-| `address`        | `ADDRESS`        | 127.0.0.1  | The address to bind                                                                    |
-| `allowedDomains` | `ALLOWED_DOMAIN` | null       | The domains that are allowed to be used as image sources                               |
-| `allowedHosts`   | `ALLOWED_HOSTS`  | null       | The hosts that are allowed to access the images                                        |
-| `cleanUrls`      | `CLEAN_URL`      | Fragment   | Whether source URLs are cleaned                                                        |
-| `maxAge`         | `MAX_AGE`        | 1d         | How long the served images are marked as cached, after that ETag is used to revalidate |
-| `storage`        | `STORAGE`        | Local      | The storage driver to use                                                              |
-| `local_assets`   | `LOCAL_ASSETS`   | `./assets` | Directory where the local storage driver persists files                                |
+| Config           | Environment      | Default   | Description                                                                            |
+| ---------------- | ---------------- | --------- | -------------------------------------------------------------------------------------- |
+| `port`           | `PORT`           | 80        | The port to bind                                                                       |
+| `address`        | `ADDRESS`        | 127.0.0.1 | The address to bind                                                                    |
+| `allowedDomains` | `ALLOWED_DOMAIN` | null      | The domains that are allowed to be used as image sources                               |
+| `allowedHosts`   | `ALLOWED_HOSTS`  | null      | The hosts that are allowed to access the images                                        |
+| `cleanUrls`      | `CLEAN_URL`      | Fragment  | Whether source URLs are cleaned                                                        |
+| `maxAge`         | `MAX_AGE`        | 1d        | How long the served images are marked as cached, after that ETag is used to revalidate |
+| `storage`        | `STORAGE`        | `local`   | The storage driver to use. Possible values: `local`, `minio`, `s3`, `gcs`.             |
+
+### Storage Drivers
+
+#### Local
+
+| Config         | Environment    | Default  | Description                   |
+| -------------- | -------------- | -------- | ----------------------------- |
+| `local.assets` | `LOCAL_ASSETS` | ./assets | The path to the assets folder |
+
+#### Minio
+
+| Config            | Environment        | Default | Description                 |
+| ----------------- | ------------------ | ------- | --------------------------- |
+| `minio.accessKey` | `MINIO_ACCESS_KEY` |         | The access key for Minio    |
+| `minio.secretKey` | `MINIO_SECRET_KEY` |         | The secret key for Minio    |
+| `minio.endpoint`  | `MINIO_ENDPOINT`   |         | The endpoint for Minio      |
+| `minio.bucket`    | `MINIO_BUCKET`     |         | The bucket to use for Minio |
+| `minio.region`    | `MINIO_REGION`     |         | The region for Minio        |
+
+#### AWS S3
+
+| Config         | Environment            | Default | Description                     |
+| -------------- | ---------------------- | ------- | ------------------------------- |
+| `s3.bucket`    | `S3_BUCKET`            |         | The S3 bucket to use            |
+| `s3.region`    | `S3_REGION`            |         | The S3 region to use            |
+| `s3.accessKey` | `S3_ACCESS_KEY_ID`     |         | The S3 access key id to use     |
+| `s3.secretKey` | `S3_SECRET_ACCESS_KEY` |         | The S3 secret access key to use |
+
+#### Google Cloud Storage
+
+| Config            | Environment        | Default | Description             |
+| ----------------- | ------------------ | ------- | ----------------------- |
+| `gcs.bucket`      | `GCS_BUCKET`       |         | The GCS bucket to use   |
+| `gcs.keyFilename` | `GCS_KEY_FILENAME` |         | The GCS key file to use |
 
 ### Allowed Domains
 

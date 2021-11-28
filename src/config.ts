@@ -40,7 +40,8 @@ function formatNullableStringOrRegexpArray(values: any) {
 }
 
 convict.addParser({ extension: ['yml', 'yaml'], parse: (s) => yaml.load(s, { schema: Schema }) })
-const config = convict({
+
+export const config = convict({
   // Server
   port: {
     doc: 'The port to bind.',
@@ -101,11 +102,13 @@ const config = convict({
   },
 
   // Local storage
-  localAssets: {
-    doc: 'The path to the assets folder',
-    format: String,
-    default: './assets',
-    env: 'LOCAL_ASSETS',
+  local: {
+    assets: {
+      doc: 'The path to the assets folder',
+      format: String,
+      default: './assets',
+      env: 'LOCAL_ASSETS',
+    },
   },
 
   // Minio storage

@@ -22,7 +22,7 @@ export async function init(App: FastifyInstance) {
   if (!storage) {
     switch (Config.storage) {
       case StorageType.Local:
-        storage = new Local(Config.localAssets)
+        storage = new Local(Config.local.assets)
         break
       case StorageType.S3:
         storage = new Minio({
