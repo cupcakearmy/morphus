@@ -26,7 +26,11 @@ export class Minio implements Storage {
   }
 
   async init(): Promise<void> {
-    await this.client.bucketExists(this.options.bucket)
+    const exists = await this.client.bucketExists(this.options.bucket)
+    if (!exists) {
+      // @ts-ignore
+      await this.client.makeBucket(this.options.bucket)
+    }
   }
 
   async readStream(path: string): Promise<NodeJS.ReadableStream> {
