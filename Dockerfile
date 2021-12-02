@@ -19,6 +19,7 @@ COPY --from=builder /app/dist ./dist
 
 ENV LOCAL_ASSETS=/data
 ENV ADDRESS=0.0.0.0
+ENV PORT=80
 
 EXPOSE 80
 
