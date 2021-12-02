@@ -8,13 +8,13 @@ The heavy lifting is done by [`libvips`](https://github.com/libvips/libvips) and
 - Config driven
 - Domain protection
 - Host verification
-- Multiple storage adapters (Local, Minio, S3)
+- Multiple storage adapters (Local, Minio, S3, GCP)
 - Caniuse based automatic formatting
 - ETag caching
 
 ## 🏗 Installation
 
-The easies way to run is using docker
+The easies way to run is using docker.
 
 ```yaml
 allowedDomains:
@@ -35,6 +35,8 @@ services:
 docker-compose up
 ```
 
+> For more realistic `docker-compose` files check the `docker` directory.
+
 ## 💻 Usage
 
 ###### Example
@@ -45,14 +47,14 @@ docker-compose up
 />
 ```
 
-| Parameter | Syntax                                                         | Example                                                    |
-| --------- | -------------------------------------------------------------- | ---------------------------------------------------------- |
-| url       | URL                                                            | `?url=https://cdn.example.org/dog-full-res.png`            |
-| format    | ComplexParameter                                               | `?format=webp` `?format=webp\|quality:90,progressive:true` |
-| resize    | [sharp.fit](https://sharp.pixelplumbing.com/api-resize#resize) | `?resize=contain`                                          |
-| width     | number                                                         | `?width=500`                                               |
-| height    | number                                                         | `?width=500`                                               |
-| op        | ComplexParameter[]                                             | `?op=rotate\|angle:90&op=sharpen\|sigma:1,flat:2`          |
+| Parameter | Syntax                                                             | Example                                                    |
+| --------- | ------------------------------------------------------------------ | ---------------------------------------------------------- |
+| url       | URL                                                                | `?url=https://cdn.example.org/dog-full-res.png`            |
+| format    | ComplexParameter                                                   | `?format=webp` `?format=webp\|quality:90,progressive:true` |
+| resize    | [sharp.fit](https://sharp.pixelplumbing.com/api-resize#parameters) | `?resize=contain`                                          |
+| width     | number                                                             | `?width=500`                                               |
+| height    | number                                                             | `?width=500`                                               |
+| op        | ComplexParameter[]                                                 | `?op=rotate\|angle:90&op=sharpen\|sigma:1,flat:2`          |
 
 ### ComplexParameter
 
@@ -104,6 +106,19 @@ Configuration can be done either thorough config files or env variables. The usa
 | `minio.bucket`    | `MINIO_BUCKET`     |         | The bucket to use for Minio |
 | `minio.region`    | `MINIO_REGION`     |         | The region for Minio        |
 
+###### Example
+
+```yaml
+# morphus.yaml
+
+storage: minio
+minio:
+  accessKey: minioadmin
+  secretKey: minioadmin
+  bucket: morphus
+  endpoint: http://localhost:9000
+```
+
 #### AWS S3
 
 | Config         | Environment            | Default | Description                     |
@@ -113,12 +128,38 @@ Configuration can be done either thorough config files or env variables. The usa
 | `s3.accessKey` | `S3_ACCESS_KEY_ID`     |         | The S3 access key id to use     |
 | `s3.secretKey` | `S3_SECRET_ACCESS_KEY` |         | The S3 secret access key to use |
 
+###### Example
+
+```yaml
+# morphus.yaml
+
+storage: s3
+
+s3:
+  accessKey: abc
+  secretKey: def
+  bucket: morphus
+```
+
 #### Google Cloud Storage
 
 | Config            | Environment        | Default | Description             |
 | ----------------- | ------------------ | ------- | ----------------------- |
 | `gcs.bucket`      | `GCS_BUCKET`       |         | The GCS bucket to use   |
 | `gcs.keyFilename` | `GCS_KEY_FILENAME` |         | The GCS key file to use |
+
+> Due to Google Cloud requiring a keyfile, that keyfile needs to be available to morphus. In docker this means passing it into the volume for example.
+
+###### Example
+
+```yaml
+# morphus.yaml
+
+storage: gsc
+gcs:
+  bucket: morphus
+  keyFilename: keyfile.json
+```
 
 ### Allowed Domains
 
