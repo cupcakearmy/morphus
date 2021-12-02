@@ -1,11 +1,18 @@
+# FOR DEVELOPMENT ONLY
+# For examples check the "docker" directory.
+
 version: '3.8'
 
 services:
-  app:
-    image: cupcakearmy/morphus
+  
+  s3:
+    image: minio/minio
     ports:
-      - "80:80"
-    volumes:
-      - ./morphus.yaml:/app/morphus.yaml:ro
-      - ./data:/data
+      - "9000:9000"
+      - "9001:9001"
+    # https://docs.min.io/minio/baremetal/reference/minio-server/minio-server.html#root-credentials
+    # Default user and password are "minioadmin"
+    command: server /data --console-address ":9001"
+    # volumes:
+    #   - ./data:/data
     
