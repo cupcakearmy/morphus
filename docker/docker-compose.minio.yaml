@@ -9,7 +9,7 @@ services:
     depends_on:
       - minio
     environment:
-      ALLOWED_DOMAINS: https://images.unsplash.com https://example.org
+      ALLOWED_DOMAINS: https://images.unsplash.com
       STORAGE: minio
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin
