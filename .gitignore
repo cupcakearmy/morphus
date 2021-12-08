@@ -7,3 +7,6 @@ data
 # Configs
 morphus.*
 keyfile.json
+
+# Keep
+!docker/morphus.yaml

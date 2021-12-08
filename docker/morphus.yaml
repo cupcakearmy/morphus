@@ -1,0 +1,11 @@
+logLevel: warn
+
+allowedDomains:
+  - example.org
+
+storage: minio
+minio:
+  accessKey: minioadmin
+  secretKey: minioadmin
+  bucket: morphus
+  endpoint: http://localhost:9000

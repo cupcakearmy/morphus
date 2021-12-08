@@ -8,13 +8,8 @@ services:
       - "80:80"
     depends_on:
       - minio
-    environment:
-      ALLOWED_DOMAINS: https://images.unsplash.com
-      STORAGE: minio
-      MINIO_ACCESS_KEY: minioadmin
-      MINIO_SECRET_KEY: minioadmin
-      MINIO_BUCKET: morphus
-      MINIO_ENDPOINT: http://minio:9000
+    volumes:
+      - ./morphus.yaml:/app/morphus.yaml:ro
   
   minio:
     image: minio/minio
