@@ -1,4 +1,10 @@
-# morphus 🖼
+# morphus
+
+<p align="center">
+  <br>
+  <img src="./design/round.png" width=150 />
+  <br><br>
+</p>
 
 A lightweight image resizing and effect proxy that caches image transformations.
 The heavy lifting is done by [`libvips`](https://github.com/libvips/libvips) and [`sharp`](https://github.com/lovell/sharp)
