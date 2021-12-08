@@ -78,15 +78,16 @@ Config files are searched in the current working directory under `morphus.yaml`.
 
 Configuration can be done either thorough config files or env variables. The usage of a config file is recommended. Below is a table of available configuration options, for more details see below.
 
-| Config           | Environment      | Default   | Description                                                                            |
-| ---------------- | ---------------- | --------- | -------------------------------------------------------------------------------------- |
-| `port`           | `PORT`           | 80        | The port to bind                                                                       |
-| `address`        | `ADDRESS`        | 127.0.0.1 | The address to bind                                                                    |
-| `allowedDomains` | `ALLOWED_DOMAIN` | null      | The domains that are allowed to be used as image sources                               |
-| `allowedHosts`   | `ALLOWED_HOSTS`  | null      | The hosts that are allowed to access the images                                        |
-| `cleanUrls`      | `CLEAN_URL`      | Fragment  | Whether source URLs are cleaned                                                        |
-| `maxAge`         | `MAX_AGE`        | 1d        | How long the served images are marked as cached, after that ETag is used to revalidate |
-| `storage`        | `STORAGE`        | `local`   | The storage driver to use. Possible values: `local`, `minio`, `s3`, `gcs`.             |
+| Config           | Environment      | Default   | Description                                                                                                                                               |
+| ---------------- | ---------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `port`           | `PORT`           | 80        | The port to bind                                                                                                                                          |
+| `address`        | `ADDRESS`        | 127.0.0.1 | The address to bind                                                                                                                                       |
+| `logLevel`       | `LOG_LEVEL`      | info      | The [log level](https://getpino.io/#/docs/api?id=loggerlevel-string-gettersetter) to use. Possible values: trace, debug, info, warn, error, fatal, silent |
+| `allowedDomains` | `ALLOWED_DOMAIN` | null      | The domains that are allowed to be used as image sources                                                                                                  |
+| `allowedHosts`   | `ALLOWED_HOSTS`  | null      | The hosts that are allowed to access the images                                                                                                           |
+| `cleanUrls`      | `CLEAN_URL`      | Fragment  | Whether source URLs are cleaned                                                                                                                           |
+| `maxAge`         | `MAX_AGE`        | 1d        | How long the served images are marked as cached, after that ETag is used to revalidate                                                                    |
+| `storage`        | `STORAGE`        | `local`   | The storage driver to use. Possible values: `local`, `minio`, `s3`, `gcs`.                                                                                |
 
 ### Storage Drivers
 
