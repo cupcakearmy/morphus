@@ -17,7 +17,7 @@ The heavy lifting is done by [`libvips`](https://github.com/libvips/libvips) and
 - Domain protection
 - Host verification
 - Multiple storage adapters (Local, Minio, S3, GCP)
-- Caniuse based automatic formatting
+- Auto format based on `Accept` header and `user-agent`.
 - ETag caching
 
 ## 🏗 Installation
@@ -25,11 +25,13 @@ The heavy lifting is done by [`libvips`](https://github.com/libvips/libvips) and
 The easies way to run is using docker.
 
 ```yaml
+# morphus.yaml
 allowedDomains:
   - !regexp ^https?:\/\/images.unsplash.com
 ```
 
 ```yaml
+# docker-compose.yaml
 version: '3.8'
 
 services:
@@ -45,15 +47,35 @@ docker-compose up
 
 > For more realistic `docker-compose` files check the `docker` directory.
 
-## 💻 Usage
+## 🎪 Examples
 
-###### Example
+**Simple resize**: `?width=2000&resize=contain`
 
-```html
-<img
-  url="https://my-morphus.org/api/image?url=https://images.unsplash.com/photo-1636839270984-1f7cbc2b4c4b?format=webp&resize=contain&width=800"
-/>
 ```
+https://my-morphus.org/api/image?width=2000&resize=contain&url=https://images.unsplash.com/photo-1636839270984-1f7cbc2b4c4b
+```
+
+**Chose a format**: `?format=webp`
+
+```
+https://my-morphus.org/api/image?format=webp&width=2000&resize=contain&url=https://images.unsplash.com/photo-1636839270984-1f7cbc2b4c4b
+```
+
+**Chose a format with a given quality**: `?format=webp|quality:90`
+
+```
+http://localhost:3000/api/image?format=webp|quality:90&width=2000&resize=contain&url=https://images.unsplash.com/photo-1636839270984-1f7cbc2b4c4b
+```
+
+**With some transformation operations**: `?op=rotate|angle:90&op=sharpen|sigma:1,flat:2`
+
+This is transforming the image once by `rotate` with the argument `angle: 90` and `sharpen` with the arguments of `sigma: 1` and `flat: 2`.
+
+```
+http://localhost:3000/api/image?width=2000&resize=contain&op=rotate|angle:90&op=sharpen|sigma:1,flat:2&url=https://images.unsplash.com/photo-1636839270984-1f7cbc2b4c4b
+```
+
+## 💻 Usage
 
 | Parameter | Syntax                                                             | Example                                                    |
 | --------- | ------------------------------------------------------------------ | ---------------------------------------------------------- |
@@ -86,16 +108,16 @@ Config files are searched in the current working directory under `morphus.yaml`.
 
 Configuration can be done either thorough config files or env variables. The usage of a config file is recommended. Below is a table of available configuration options, for more details see below.
 
-| Config           | Environment                                                                                 | Default   | Description                                                                                                                                               |
-| ---------------- | ------------------------------------------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `port`           | `PORT`                                                                                      | 80        | The port to bind                                                                                                                                          |
-| `address`        | `ADDRESS`                                                                                   | 127.0.0.1 | The address to bind                                                                                                                                       |
-| `logLevel`       | `LOG_LEVEL`                                                                                 | info      | The [log level](https://getpino.io/#/docs/api?id=loggerlevel-string-gettersetter) to use. Possible values: trace, debug, info, warn, error, fatal, silent |
-| `allowedDomains` | `ALLOWED_DOMAINS` [unsupported for now](https://github.com/mozilla/node-convict/issues/399) | null      | The domains that are allowed to be used as image sources                                                                                                  |
-| `allowedHosts`   | `ALLOWED_HOSTS` [unsupported for now](https://github.com/mozilla/node-convict/issues/399)   | null      | The hosts that are allowed to access the images                                                                                                           |
-| `cleanUrls`      | `CLEAN_URL`                                                                                 | Fragment  | Whether source URLs are cleaned                                                                                                                           |
-| `maxAge`         | `MAX_AGE`                                                                                   | 1d        | How long the served images are marked as cached, after that ETag is used to revalidate                                                                    |
-| `storage`        | `STORAGE`                                                                                   | `local`   | The storage driver to use. Possible values: `local`, `minio`, `s3`, `gcs`.                                                                                |
+| Config           | Environment                                                                                        | Default   | Description                                                                                                                                               |
+| ---------------- | -------------------------------------------------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `port`           | `PORT`                                                                                             | 80        | The port to bind                                                                                                                                          |
+| `address`        | `ADDRESS`                                                                                          | 127.0.0.1 | The address to bind                                                                                                                                       |
+| `logLevel`       | `LOG_LEVEL`                                                                                        | info      | The [log level](https://getpino.io/#/docs/api?id=loggerlevel-string-gettersetter) to use. Possible values: trace, debug, info, warn, error, fatal, silent |
+| `allowedDomains` | `ALLOWED_DOMAINS` [unsupported for now as ENV](https://github.com/mozilla/node-convict/issues/399) | null      | The domains that are allowed to be used as image sources                                                                                                  |
+| `allowedHosts`   | `ALLOWED_HOSTS` [unsupported for now as ENV](https://github.com/mozilla/node-convict/issues/399)   | null      | The hosts that are allowed to access the images                                                                                                           |
+| `cleanUrls`      | `CLEAN_URL`                                                                                        | Fragment  | Whether source URLs are cleaned                                                                                                                           |
+| `maxAge`         | `MAX_AGE`                                                                                          | 1d        | How long the served images are marked as cached, after that ETag is used to revalidate                                                                    |
+| `storage`        | `STORAGE`                                                                                          | `local`   | The storage driver to use. Possible values: `local`, `minio`, `s3`, `gcs`.                                                                                |
 
 ### Storage Drivers
 
