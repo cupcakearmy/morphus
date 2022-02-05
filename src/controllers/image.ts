@@ -9,8 +9,9 @@ import {
   IsUrl,
   ValidateNested,
 } from 'class-validator'
-import { RouteHandlerMethod } from 'fastify'
+import type { RouteHandlerMethod } from 'fastify'
 import { flatten, unflatten } from 'flat'
+import type { IncomingHttpHeaders } from 'http2'
 import ms from 'ms'
 import sharp, { FitEnum, FormatEnum } from 'sharp'
 
@@ -116,7 +117,7 @@ export class TransformQueryBase {
   @ValidateNested()
   op: ComplexParameter[] = []
 
-  constructor(data: any, options: { ua?: string }) {
+  constructor(data: any, options: { headers: IncomingHttpHeaders }) {
     Object.assign(this, data)
 
     if (this.width) this.width = parseInt(this.width as any)
@@ -128,8 +129,9 @@ export class TransformQueryBase {
     // @ts-ignore
     this.format = new ComplexParameter((this.format as any) || 'auto')
     if ((this.format.name as string) === 'auto') {
-      if (!options.ua) throw new Error('cannot use auto format without user agent')
-      this.autoFormat(options.ua)
+      if (!options.headers) throw new Error('cannot use auto format without user agent')
+
+      this.autoFormat(options.headers)
     }
 
     validateSyncOrFail(this)
@@ -157,10 +159,29 @@ export class TransformQueryBase {
     return new URLSearchParams(sortObjectByKeys(data)).toString()
   }
 
-  autoFormat(ua: string) {
-    if (supportsAvif(ua)) this.format!.name = 'avif'
-    else if (supportsWebP(ua)) this.format!.name = 'webp'
-    else this.format!.name = 'jpeg'
+  autoFormat(headers: IncomingHttpHeaders) {
+    const ua = headers['user-agent']
+    const accept = headers['accept'] // Accept: image/avif,image/webp,*/*
+    if (accept) {
+      const acceptTypes = accept.split(',')
+      for (const type of acceptTypes) {
+        if (type.startsWith('image/')) {
+          this.format!.name = type.split('/')[1] as any
+          return
+        }
+      }
+    }
+    if (ua) {
+      if (supportsAvif(ua)) {
+        this.format!.name = 'avif'
+        return
+      }
+      if (supportsWebP(ua)) {
+        this.format!.name = 'webp'
+        return
+      }
+    }
+    this.format!.name = 'jpeg'
   }
 
   get hash(): string {
@@ -170,7 +191,7 @@ export class TransformQueryBase {
 
 export const image: RouteHandlerMethod = async (request, reply) => {
   try {
-    const q = new TransformQueryBase(request.query, { ua: request.headers['user-agent'] })
+    const q = new TransformQueryBase(request.query, { headers: request.headers })
 
     if (Config.allowedDomains) {
       if (!testForPrefixOrRegexp(q.url, Config.allowedDomains))
@@ -183,14 +204,17 @@ export const image: RouteHandlerMethod = async (request, reply) => {
         return ForbiddenError(reply, 'origin not allowed')
     }
 
+    const hash = q.hash
+
     // @ts-ignore
-    reply.etag(q.hash)
+    reply.etag(hash)
     // @ts-ignore
     reply.expires(new Date(Date.now() + ms(Config.maxAge)))
 
     let stream: NodeJS.ReadableStream
+    App.log.debug('Serving image. Hash: ' + hash)
     try {
-      stream = await storage.readStream(q.hash)
+      stream = await storage.readStream(hash)
     } catch {
       App.log.debug(`Transforming`)
       stream = await transform(q)
