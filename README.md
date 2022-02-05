@@ -9,7 +9,7 @@
 A lightweight image resizing and effect proxy that caches image transformations.
 The heavy lifting is done by [`libvips`](https://github.com/libvips/libvips) and [`sharp`](https://github.com/lovell/sharp)
 
-> **⚠️ Currently under development, see the [milestone](https://github.com/cupcakearmy/morphus/milestone/1) for status.**
+> **⚠️ Currently under development**
 
 ## 🌈 Features
 
