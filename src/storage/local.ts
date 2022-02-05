@@ -1,6 +1,7 @@
 import fs from 'fs'
 import { join, resolve } from 'path'
 import { promisify } from 'util'
+import { App } from '..'
 
 import { Storage } from './'
 
@@ -37,8 +38,9 @@ export class Local implements Storage {
     })
   }
 
-  readStream(path: string): Promise<NodeJS.ReadableStream> {
+  async readStream(path: string): Promise<NodeJS.ReadableStream> {
     const file = join(this.root, path)
+    if (!(await this.exists(path))) throw new Error(`File not found: ${path}`)
     return new Promise((resolve, reject) => {
       const stream = fs.createReadStream(file)
       stream.on('error', reject)
