@@ -3,10 +3,11 @@ dist
 assets
 *.tsbuildinfo
 data
+.vscode
 
 # Configs
 morphus.*
 keyfile.json
 
 # Keep
-!docker/morphus.yaml
+!docker/**/morphus.yaml
