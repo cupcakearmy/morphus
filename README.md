@@ -6,6 +6,13 @@
   <br><br>
 </p>
 
+<a href="https://discord.gg/nuby6RnxZt">
+  <img alt="discord" src="https://img.shields.io/discord/252403122348097536?style=for-the-badge" />
+  <img alt="docker pulls" src="https://img.shields.io/docker/pulls/cupcakearmy/morphus?style=for-the-badge" />
+  <img alt="Docker image size badge" src="https://img.shields.io/docker/image-size/cupcakearmy/morphus?style=for-the-badge" />
+  <img alt="Latest version" src="https://img.shields.io/github/v/release/cupcakearmy/moprhus?style=for-the-badge" />
+</a>
+
 A lightweight image resizing and effect proxy that caches image transformations.
 The heavy lifting is done by [`libvips`](https://github.com/libvips/libvips) and [`sharp`](https://github.com/lovell/sharp)
 
@@ -17,8 +24,9 @@ The heavy lifting is done by [`libvips`](https://github.com/libvips/libvips) and
 - Domain protection
 - Host verification
 - Multiple storage adapters (Local, Minio, S3, GCP)
-- Auto format based on `Accept` header and `user-agent`.
+- Auto format based on `Accept` header and `user-agent`
 - ETag caching
+- Presets and optinal forcing of presets
 
 ## 🏗 Installation
 
@@ -64,7 +72,7 @@ https://my-morphus.org/api/image?format=webp&width=2000&resize=contain&url=https
 **Chose a format with a given quality**: `?format=webp|quality:90`
 
 ```
-http://localhost:3000/api/image?format=webp|quality:90&width=2000&resize=contain&url=https://images.unsplash.com/photo-1636839270984-1f7cbc2b4c4b
+https://my-morphus.org/api/image?format=webp|quality:90&width=2000&resize=contain&url=https://images.unsplash.com/photo-1636839270984-1f7cbc2b4c4b
 ```
 
 **With some transformation operations**: `?op=rotate|angle:90&op=sharpen|sigma:1,flat:2`
@@ -72,7 +80,19 @@ http://localhost:3000/api/image?format=webp|quality:90&width=2000&resize=contain
 This is transforming the image once by `rotate` with the argument `angle: 90` and `sharpen` with the arguments of `sigma: 1` and `flat: 2`.
 
 ```
-http://localhost:3000/api/image?width=2000&resize=contain&op=rotate|angle:90&op=sharpen|sigma:1,flat:2&url=https://images.unsplash.com/photo-1636839270984-1f7cbc2b4c4b
+https://my-morphus.org/api/image?width=2000&resize=contain&op=rotate|angle:90&op=sharpen|sigma:1,flat:2&url=https://images.unsplash.com/photo-1636839270984-1f7cbc2b4c4b
+```
+
+**With custom presets**: `?preset=thumbnail`
+
+```yaml
+# morphus.yaml
+presets:
+  thumbnail: ?width=300&height=150&resize=contain
+```
+
+```
+https://my-morphus.org/api/image?preset=thumbnail&url=https://images.unsplash.com/photo-1636839270984-1f7cbc2b4c4b
 ```
 
 ## 💻 Usage
@@ -108,16 +128,18 @@ Config files are searched in the current working directory under `morphus.yaml`.
 
 Configuration can be done either thorough config files or env variables. The usage of a config file is recommended. Below is a table of available configuration options, for more details see below.
 
-| Config           | Environment                                                                                        | Default   | Description                                                                                                                                               |
-| ---------------- | -------------------------------------------------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `port`           | `PORT`                                                                                             | 80        | The port to bind                                                                                                                                          |
-| `address`        | `ADDRESS`                                                                                          | 127.0.0.1 | The address to bind                                                                                                                                       |
-| `logLevel`       | `LOG_LEVEL`                                                                                        | info      | The [log level](https://getpino.io/#/docs/api?id=loggerlevel-string-gettersetter) to use. Possible values: trace, debug, info, warn, error, fatal, silent |
-| `allowedDomains` | `ALLOWED_DOMAINS` [unsupported for now as ENV](https://github.com/mozilla/node-convict/issues/399) | null      | The domains that are allowed to be used as image sources                                                                                                  |
-| `allowedHosts`   | `ALLOWED_HOSTS` [unsupported for now as ENV](https://github.com/mozilla/node-convict/issues/399)   | null      | The hosts that are allowed to access the images                                                                                                           |
-| `cleanUrls`      | `CLEAN_URL`                                                                                        | Fragment  | Whether source URLs are cleaned                                                                                                                           |
-| `maxAge`         | `MAX_AGE`                                                                                          | 1d        | How long the served images are marked as cached, after that ETag is used to revalidate                                                                    |
-| `storage`        | `STORAGE`                                                                                          | `local`   | The storage driver to use. Possible values: `local`, `minio`, `s3`, `gcs`.                                                                                |
+| Config             | Environment                                                                      | Default   | Description                                                                                                                                                |
+| ------------------ | -------------------------------------------------------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `port`             | `PORT`                                                                           | 80        | The port to bind.                                                                                                                                          |
+| `address`          | `ADDRESS`                                                                        | 127.0.0.1 | The address to bind.                                                                                                                                       |
+| `logLevel`         | `LOG_LEVEL`                                                                      | info      | The [log level](https://getpino.io/#/docs/api?id=loggerlevel-string-gettersetter) to use. Possible values: trace, debug, info, warn, error, fatal, silent. |
+| `presets`          | not available                                                                    | null      | Predefined presets. See below for an example.                                                                                                              |
+| `onlyAllowPresets` | `ONLY_ALLOW_PRESETS`                                                             | false     | Whether to allow only presets. This can prevent unfair usage.                                                                                              |
+| `allowedDomains`   | [unsupported for now as ENV](https://github.com/mozilla/node-convict/issues/399) | null      | The domains that are allowed to be used as image sources.                                                                                                  |
+| `allowedHosts`     | [unsupported for now as ENV](https://github.com/mozilla/node-convict/issues/399) | null      | The hosts that are allowed to access the images.                                                                                                           |
+| `cleanUrls`        | `CLEAN_URL`                                                                      | Fragment  | Whether source URLs are cleaned.                                                                                                                           |
+| `maxAge`           | `MAX_AGE`                                                                        | 1d        | How long the served images are marked as cached, after that ETag is used to revalidate.                                                                    |
+| `storage`          | `STORAGE`                                                                        | `local`   | The storage driver to use. Possible values: `local`, `minio`, `s3`, `gcs`.                                                                                 |
 
 ### Storage Drivers
 
@@ -192,6 +214,36 @@ gcs:
   keyFilename: keyfile.json
 ```
 
+### Presets
+
+With the help of presets you can give predefined sets of operations and transformations.
+Clients then can use the presets without specifying the exact parameters.
+
+The syntax is an object that maps a preset name to a value. The value is a valid url query.
+
+```yaml
+presets:
+  sm: ?format=webp|quality:90&width=500&resize=contain
+  md: ?format=webp|quality:90&width=1000&resize=contain
+  lg: ?format=webp|quality:90&width=2000&resize=contain
+```
+
+A client can the request an image with the following url
+
+```
+https://my-morphus.org/api/image?preset=sm&url=https://images.unsplash.com/photo-1636839270984-1f7cbc2b4c4b
+```
+
+### Only allow presets
+
+This feature can help reduce abuse of the server by only allowing.
+When `onlyAllowPresets` is set no other parameter is allowed besides `url` and `preset`.
+If possible it's recommended to turn this on.
+
+```yaml
+onlyAllowPresets: true
+```
+
 ### Allowed Domains
 
 Allowed domains are a way to secure the service by only allowing certain remote domains as possible sources of images.
@@ -226,7 +278,7 @@ allowedHosts:
 
 When using the url in an `<img>` tag you need to add the `<img crossorigin="anonymous">` attribute to enable sending the `origin` header to the server. Read more [here](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attr-crossorigin)
 
-## Clean URLs
+### Clean URLs
 
 This option allows cleaning the source URLs to remove duplicates. allowed options are `off`, `fragment`, `query`.
 

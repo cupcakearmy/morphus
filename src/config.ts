@@ -125,6 +125,7 @@ export const config = convict({
     doc: 'Whether to allow only presets',
     format: Boolean,
     default: false,
+    env: 'ONLY_ALLOW_PRESETS',
   },
 
   // Local storage
