@@ -1,19 +1,24 @@
-FROM node:16-alpine as builder
+# BASE
+FROM node:16-alpine as base
 
 WORKDIR /app
+RUN npm -g i pnpm@7
+
+# BUILDER
+FROM base as builder
 
 COPY package.json pnpm-lock.yaml ./
-RUN npm exec pnpm i --frozen-lockfile
+RUN pnpm i --frozen-lockfile
 
 COPY . .
-RUN npm exec pnpm run build
+RUN pnpm run build
 RUN ls -hal
 
-FROM node:16-alpine
+# RUNNER
+FROM base
 
-WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
-RUN npm exec pnpm i --frozen-lockfile --prod
+RUN pnpm install --frozen-lockfile --prod
 
 COPY --from=builder /app/dist ./dist
 
