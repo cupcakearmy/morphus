@@ -14,12 +14,10 @@ import { flatten, unflatten } from 'flat'
 import type { IncomingHttpHeaders } from 'http2'
 import ms from 'ms'
 import sharp, { FitEnum, FormatEnum } from 'sharp'
-
 import { App } from '..'
 import { Config, URLClean } from '../config'
 import { storage } from '../storage'
 import { transform } from '../transform'
-import { supportsAvif, supportsWebP } from '../utils/caniuse'
 import { ForbiddenError } from '../utils/errors'
 import { sha3, sortObjectByKeys, testForPrefixOrRegexp, validateSyncOrFail } from '../utils/utils'
 
@@ -171,16 +169,7 @@ export class TransformQueryBase {
         }
       }
     }
-    if (ua) {
-      if (supportsAvif(ua)) {
-        this.format!.name = 'avif'
-        return
-      }
-      if (supportsWebP(ua)) {
-        this.format!.name = 'webp'
-        return
-      }
-    }
+    // Fallback
     this.format!.name = 'jpeg'
   }
 

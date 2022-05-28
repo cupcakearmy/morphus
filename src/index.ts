@@ -1,5 +1,4 @@
 import fastify from 'fastify'
-
 import { Config, init as initConfig } from './config'
 import { init as initRoutes } from './controllers'
 import { init as initHooks } from './fastify/hooks'
