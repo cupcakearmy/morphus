@@ -61,6 +61,11 @@ export class ComplexParameter<N = string, T extends object = {}> {
   @IsObject()
   options: T
 
+  /**
+   * parses a parameter value from a string
+   *
+   * @param parameter parameter to parse
+   */
   constructor(parameter: string) {
     const [name, optionsRaw] = parameter.split('|')
     if (!name) throw new Error('Invalid parameter')
@@ -115,8 +120,33 @@ export class TransformQueryBase {
   @ValidateNested()
   op: ComplexParameter[] = []
 
+  @IsOptional()
+  @IsString()
+  preset?: string
+
   constructor(data: any, options: { headers: IncomingHttpHeaders }) {
-    Object.assign(this, data)
+    if (Config.onlyAllowPresets) {
+      const { url, preset, ...rest } = data
+      if (!preset) {
+        throw new Error('Preset is required')
+      }
+      if (Object.keys(rest).length > 0) {
+        throw new Error('only preset parameter is allowed')
+      }
+      this.url = url
+      this.preset = data.preset
+    } else {
+      Object.assign(this, data)
+    }
+
+    if (this.preset) {
+      const preset = Config.presets[this.preset]
+      if (!preset) {
+        throw new Error('preset not found')
+      }
+      const params = Object.fromEntries(new URLSearchParams(preset).entries())
+      Object.assign(this, params)
+    }
 
     if (this.width) this.width = parseInt(this.width as any)
     if (this.height) this.height = parseInt(this.height as any)
@@ -127,8 +157,7 @@ export class TransformQueryBase {
     // @ts-ignore
     this.format = new ComplexParameter((this.format as any) || 'auto')
     if ((this.format.name as string) === 'auto') {
-      if (!options.headers) throw new Error('cannot use auto format without user agent')
-
+      if (!options.headers) throw new Error('cannot use auto format without headers')
       this.autoFormat(options.headers)
     }
 
@@ -152,13 +181,7 @@ export class TransformQueryBase {
     }
   }
 
-  toString(): string {
-    const data = flatten(this) as Record<string, any>
-    return new URLSearchParams(sortObjectByKeys(data)).toString()
-  }
-
-  autoFormat(headers: IncomingHttpHeaders) {
-    const ua = headers['user-agent']
+  private autoFormat(headers: IncomingHttpHeaders) {
     const accept = headers['accept'] // Accept: image/avif,image/webp,*/*
     if (accept) {
       const acceptTypes = accept.split(',')
@@ -171,6 +194,11 @@ export class TransformQueryBase {
     }
     // Fallback
     this.format!.name = 'jpeg'
+  }
+
+  toString(): string {
+    const data = flatten(this) as Record<string, any>
+    return new URLSearchParams(sortObjectByKeys(data)).toString()
   }
 
   get hash(): string {

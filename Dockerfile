@@ -17,6 +17,8 @@ RUN ls -hal
 # RUNNER
 FROM base
 
+ENV NODE_ENV=production
+
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile --prod
 

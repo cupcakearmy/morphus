@@ -30,12 +30,25 @@ const Schema = yaml.DEFAULT_SCHEMA.extend([RegExpTag])
 export type NullableStringOrRegexpArray = (string | RegExp)[] | null
 
 function formatNullableStringOrRegexpArray(values: any) {
+  if (values === null) return
   if (!Array.isArray(values)) throw new Error('must be an array')
   if (values.length === 0) throw new Error('must be an array with at least one element')
   for (const value of values) {
     if (typeof value === 'string') continue
     if (value instanceof RegExp) continue
     throw new Error('must be an array of strings or regexps')
+  }
+}
+
+type PresetsConfig = Record<string, string> | null
+function formatPresets(values: any) {
+  if (values === null) return
+  if (typeof values === 'object') {
+    for (const key in values) {
+      if (typeof values[key] !== 'string') throw new Error('entries for presets must be strings')
+    }
+  } else {
+    throw new Error('presets must be an object or null')
   }
 }
 
@@ -99,6 +112,19 @@ export const config = convict({
     format: Object.values(StorageType),
     default: StorageType.Local,
     env: 'STORAGE',
+  },
+
+  // Presets
+  presets: {
+    doc: 'The presets to use',
+    format: formatPresets,
+    nullable: true,
+    default: null as PresetsConfig,
+  },
+  onlyAllowPresets: {
+    doc: 'Whether to allow only presets',
+    format: Boolean,
+    default: false,
   },
 
   // Local storage
