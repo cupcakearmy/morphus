@@ -186,7 +186,7 @@ s3:
 ```yaml
 # morphus.yaml
 
-storage: gsc
+storage: gcs
 gcs:
   bucket: morphus
   keyFilename: keyfile.json
