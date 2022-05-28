@@ -4,7 +4,16 @@
 version: '3.8'
 
 services:
-  
+  app:
+    image: cupcakearmy/morphus
+    build: .
+    volumes:
+      - ./morphus.yaml:/app/morphus.yaml:ro
+    ports:
+      - 80:80
+    depends_on:
+      - s3
+
   s3:
     image: minio/minio
     ports:
