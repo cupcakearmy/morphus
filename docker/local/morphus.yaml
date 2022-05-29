@@ -1,0 +1,4 @@
+logLevel: warn
+
+allowedDomains:
+  - example.org

@@ -3,6 +3,8 @@ FROM node:16-alpine as base
 
 WORKDIR /app
 RUN npm -g i pnpm@7
+# Needed for node-gyp
+RUN apk add --no-cache python3
 
 # BUILDER
 FROM base as builder

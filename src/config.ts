@@ -83,14 +83,14 @@ export const config = convict({
     format: formatNullableStringOrRegexpArray,
     default: null as NullableStringOrRegexpArray,
     nullable: true,
-    env: 'ALLOWED_DOMAINS',
+    // env: 'ALLOWED_DOMAINS', // See: https://github.com/mozilla/node-convict/issues/399
   },
   allowedHosts: {
     doc: 'The hosts that are allowed to access the images',
     format: formatNullableStringOrRegexpArray,
     default: null as NullableStringOrRegexpArray,
     nullable: true,
-    env: 'ALLOWED_HOSTS',
+    // env: 'ALLOWED_HOSTS', // See: https://github.com/mozilla/node-convict/issues/399
   },
   cleanUrls: {
     doc: 'Whether to clean URLs',
