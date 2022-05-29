@@ -24,7 +24,7 @@ The heavy lifting is done by [`libvips`](https://github.com/libvips/libvips) and
 - Domain protection
 - Host verification
 - Multiple storage adapters (Local, Minio, S3, GCP)
-- Auto format based on `Accept` header and `user-agent`
+- Auto format based on `Accept` header
 - ETag caching
 - Presets and optinal forcing of presets
 
