@@ -3,6 +3,7 @@ dist
 assets
 *.tsbuildinfo
 data
+demo
 .vscode
 
 # Configs

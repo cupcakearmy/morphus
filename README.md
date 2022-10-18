@@ -26,7 +26,7 @@ The heavy lifting is done by [`libvips`](https://github.com/libvips/libvips) and
 - Multiple storage adapters (Local, Minio, S3, GCP)
 - Auto format based on `Accept` header
 - ETag caching
-- Presets and optinal forcing of presets
+- Presets and optional forcing of presets
 
 ## 🏗 Installation
 

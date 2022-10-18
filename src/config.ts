@@ -103,7 +103,7 @@ export const config = convict({
   maxAge: {
     doc: 'The maximum age of a cached image',
     format: String,
-    default: '1d',
+    default: '90d',
     env: 'MAX_AGE',
   },
 
